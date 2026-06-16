@@ -1,1 +1,465 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نوید کنزول | Navid Kenzol | Cyber Iranian Hacker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --black: #0a0a0a; --white: #ffffff; --gray: #888888; --dark-gray: #1a1a1a; --accent: #00ff88; }
+        body { background: var(--black); color: var(--white); font-family: 'Vazirmatn', sans-serif; overflow-x: hidden; cursor: none; }
+        .cursor { width: 20px; height: 20px; border: 2px solid var(--white); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transition: transform 0.1s; mix-blend-mode: difference; }
+        .cursor-follower { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transition: transform 0.3s; }
+        nav { position: fixed; top: 0; width: 100%; padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: rgba(10,10,10,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .logo { font-family: 'Orbitron', monospace; font-size: 1.5rem; font-weight: 900; letter-spacing: 3px; color: var(--white); text-shadow: 0 0 20px rgba(255,255,255,0.5); }
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links a { font-family: 'Vazirmatn', sans-serif; color: var(--white); text-decoration: none; font-size: 1rem; font-weight: 500; position: relative; padding: 5px 0; transition: all 0.3s; }
+        .nav-links a::after { content: ''; position: absolute; bottom: 0; right: 0; width: 0; height: 2px; background: var(--white); transition: width 0.3s; }
+        .nav-links a:hover::after { width: 100%; }
+        .hero { height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        .hero-content { position: relative; z-index: 2; text-align: center; max-width: 900px; padding: 0 20px; }
+        .hero-image-container { width: 280px; height: 280px; margin: 0 auto 40px; position: relative; transform-style: preserve-3d; animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotateY(0deg); } 50% { transform: translateY(-20px) rotateY(5deg); } }
+        .hero-image { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 4px solid var(--white); box-shadow: 0 0 60px rgba(255,255,255,0.2), 0 0 120px rgba(255,255,255,0.1), inset 0 0 60px rgba(0,0,0,0.3); filter: grayscale(30%) contrast(1.1); transition: all 0.5s; }
+        .hero-image:hover { filter: grayscale(0%) contrast(1.2); box-shadow: 0 0 80px rgba(255,255,255,0.4), 0 0 160px rgba(255,255,255,0.2); }
+        .hero-image-ring { position: absolute; top: -20px; left: -20px; right: -20px; bottom: -20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; animation: rotate 20s linear infinite; }
+        .hero-image-ring::before { content: ''; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; animation: rotate 15s linear infinite reverse; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .hero-title { font-family: 'Orbitron', monospace; font-size: 4rem; font-weight: 900; letter-spacing: 8px; margin-bottom: 10px; text-transform: uppercase; background: linear-gradient(135deg, #fff 0%, #888 50%, #fff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: none; position: relative; }
+        .hero-subtitle { font-family: 'Vazirmatn', sans-serif; font-size: 1.8rem; font-weight: 300; margin-bottom: 20px; color: var(--gray); letter-spacing: 5px; }
+        .hero-tag { font-family: 'VT323', monospace; font-size: 1.3rem; color: var(--accent); letter-spacing: 3px; opacity: 0.8; }
+        .typing-text { font-family: 'VT323', monospace; font-size: 1.2rem; color: var(--white); margin-top: 30px; min-height: 30px; }
+        .scroll-indicator { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 2; animation: bounce 2s infinite; }
+        .scroll-indicator span { display: block; width: 30px; height: 50px; border: 2px solid var(--white); border-radius: 15px; position: relative; }
+        .scroll-indicator span::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; background: var(--white); border-radius: 50%; animation: scroll-dot 2s infinite; }
+        @keyframes scroll-dot { 0%, 100% { opacity: 1; top: 10px; } 50% { opacity: 0; top: 30px; } }
+        @keyframes bounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(10px); } }
+        .section { padding: 120px 50px; position: relative; }
+        .about { background: linear-gradient(180deg, var(--black) 0%, var(--dark-gray) 100%); }
+        .section-title { font-family: 'Orbitron', monospace; font-size: 3rem; font-weight: 900; text-align: center; margin-bottom: 60px; letter-spacing: 5px; position: relative; display: inline-block; left: 50%; transform: translateX(-50%); }
+        .section-title::after { content: ''; position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); width: 60px; height: 3px; background: var(--white); }
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; max-width: 1200px; margin: 0 auto; align-items: center; }
+        .about-image { position: relative; transform-style: preserve-3d; perspective: 1000px; }
+        .about-image img { width: 100%; max-width: 450px; border-radius: 20px; filter: grayscale(40%) contrast(1.1); box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(255,255,255,0.1); transition: all 0.5s; transform: rotateY(-5deg); }
+        .about-image:hover img { filter: grayscale(0%) contrast(1.2); transform: rotateY(0deg) scale(1.02); box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(255,255,255,0.2); }
+        .about-content h3 { font-family: 'Orbitron', monospace; font-size: 2rem; margin-bottom: 20px; letter-spacing: 3px; }
+        .about-content p { font-family: 'Vazirmatn', sans-serif; font-size: 1.1rem; line-height: 2.2; color: var(--gray); margin-bottom: 20px; text-align: justify; }
+        .about-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+        .stat-item { text-align: center; padding: 20px; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; background: rgba(255,255,255,0.02); transition: all 0.3s; }
+        .stat-item:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); transform: translateY(-5px); }
+        .stat-number { font-family: 'Orbitron', monospace; font-size: 2.5rem; font-weight: 900; color: var(--white); }
+        .stat-label { font-family: 'Vazirmatn', sans-serif; font-size: 0.9rem; color: var(--gray); margin-top: 5px; }
+        .skills { background: var(--black); position: relative; }
+        .skills::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); }
+        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
+        .skill-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 40px; transition: all 0.5s; position: relative; overflow: hidden; }
+        .skill-card::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); transition: left 0.5s; }
+        .skill-card:hover::before { left: 100%; }
+        .skill-card:hover { border-color: rgba(255,255,255,0.3); transform: translateY(-10px) scale(1.02); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .skill-icon { font-size: 3rem; margin-bottom: 20px; display: block; }
+        .skill-card h3 { font-family: 'Orbitron', monospace; font-size: 1.3rem; margin-bottom: 15px; letter-spacing: 2px; }
+        .skill-card p { font-family: 'Vazirmatn', sans-serif; color: var(--gray); line-height: 1.8; font-size: 0.95rem; }
+        .skill-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 20px; overflow: hidden; }
+        .skill-progress { height: 100%; background: linear-gradient(90deg, var(--white), var(--gray)); border-radius: 2px; width: 0; transition: width 1.5s ease; }
+        .timeline { background: linear-gradient(180deg, var(--dark-gray) 0%, var(--black) 100%); }
+        .timeline-container { max-width: 1000px; margin: 0 auto; position: relative; }
+        .timeline-container::before { content: ''; position: absolute; top: 0; bottom: 0; right: 50%; width: 2px; background: linear-gradient(180deg, transparent, var(--white), transparent); transform: translateX(50%); }
+        .timeline-item { display: flex; justify-content: flex-end; padding-right: 50%; position: relative; margin-bottom: 50px; }
+        .timeline-item:nth-child(even) { justify-content: flex-start; padding-right: 0; padding-left: 50%; }
+        .timeline-content { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 30px; max-width: 400px; margin: 0 30px; transition: all 0.3s; }
+        .timeline-content:hover { border-color: rgba(255,255,255,0.3); transform: scale(1.05); box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .timeline-dot { position: absolute; right: 50%; top: 30px; width: 20px; height: 20px; background: var(--white); border-radius: 50%; transform: translateX(50%); box-shadow: 0 0 20px rgba(255,255,255,0.5); }
+        .timeline-item:nth-child(even) .timeline-dot { right: 50%; }
+        .timeline-date { font-family: 'Orbitron', monospace; font-size: 0.9rem; color: var(--accent); margin-bottom: 10px; }
+        .timeline-title { font-family: 'Orbitron', monospace; font-size: 1.2rem; margin-bottom: 10px; }
+        .timeline-desc { font-family: 'Vazirmatn', sans-serif; color: var(--gray); font-size: 0.95rem; line-height: 1.8; }
+        .contact { background: var(--black); text-align: center; }
+        .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; max-width: 1000px; margin: 60px auto 0; }
+        .contact-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 40px; transition: all 0.3s; text-decoration: none; color: var(--white); display: block; }
+        .contact-card:hover { border-color: rgba(255,255,255,0.4); transform: translateY(-10px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+        .contact-icon { font-size: 2.5rem; margin-bottom: 15px; display: block; }
+        .contact-card h3 { font-family: 'Orbitron', monospace; font-size: 1.2rem; margin-bottom: 10px; }
+        .contact-card p { font-family: 'Vazirmatn', sans-serif; color: var(--gray); font-size: 0.9rem; }
+        footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.1); padding: 40px; text-align: center; }
+        footer p { font-family: 'Orbitron', monospace; font-size: 0.9rem; color: var(--gray); letter-spacing: 2px; }
+        .glitch { position: relative; }
+        .glitch::before, .glitch::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .glitch::before { left: 2px; text-shadow: -2px 0 #ff0000; clip: rect(24px, 550px, 90px, 0); animation: glitch-anim-2 3s infinite linear alternate-reverse; }
+        .glitch::after { left: -2px; text-shadow: -2px 0 #00ff00; clip: rect(85px, 550px, 140px, 0); animation: glitch-anim 2.5s infinite linear alternate-reverse; }
+        @keyframes glitch-anim { 0% { clip: rect(10px, 9999px, 85px, 0); } 20% { clip: rect(65px, 9999px, 99px, 0); } 40% { clip: rect(25px, 9999px, 145px, 0); } 60% { clip: rect(85px, 9999px, 40px, 0); } 80% { clip: rect(120px, 9999px, 80px, 0); } 100% { clip: rect(45px, 9999px, 60px, 0); } }
+        @keyframes glitch-anim-2 { 0% { clip: rect(65px, 9999px, 100px, 0); } 20% { clip: rect(20px, 9999px, 35px, 0); } 40% { clip: rect(90px, 9999px, 130px, 0); } 60% { clip: rect(40px, 9999px, 60px, 0); } 80% { clip: rect(110px, 9999px, 80px, 0); } 100% { clip: rect(15px, 9999px, 95px, 0); } }
+        #matrix-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.15; }
+        @media (max-width: 768px) { .hero-title { font-size: 2.5rem; } .hero-subtitle { font-size: 1.2rem; } .about-grid { grid-template-columns: 1fr; } .timeline-container::before { right: 20px; } .timeline-item { padding-right: 50px; } .timeline-item:nth-child(even) { padding-left: 50px; padding-right: 0; } .timeline-dot { right: 20px; } nav { padding: 15px 20px; } .nav-links { display: none; } .section { padding: 80px 20px; } }
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .particle { position: absolute; width: 2px; height: 2px; background: rgba(255,255,255,0.5); border-radius: 50%; animation: particle-float 20s infinite; }
+        @keyframes particle-float { 0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; } }
+        .card-3d { transform-style: preserve-3d; transition: transform 0.5s; }
+    </style>
+</head>
+<body>
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="particles" id="particles"></div>
+    <nav>
+        <div class="logo">NAVID.KNZ</div>
+        <ul class="nav-links">
+            <li><a href="#home">خانه</a></li>
+            <li><a href="#about">درباره من</a></li>
+            <li><a href="#skills">مهارت‌ها</a></li>
+            <li><a href="#timeline">مسیر حرفه‌ای</a></li>
+            <li><a href="#contact">تماس</a></li>
+        </ul>
+    </nav>
+    <section class="hero" id="home">
+        <div id="canvas-container"></div>
+        <div class="hero-content">
+            <div class="hero-image-container">
+                <div class="hero-image-ring"></div>
+                <img src="https://i.imgur.com/placeholder.jpg" alt="نوید کنزول" class="hero-image" id="hero-img">
+            </div>
+            <h1 class="hero-title glitch" data-text="NAVID KENZOL">NAVID KENZOL</h1>
+            <p class="hero-subtitle">پسر سایبری ایرانی</p>
+            <p class="hero-tag">&lt; HACKER /&gt;</p>
+            <div class="typing-text" id="typing"></div>
+        </div>
+        <div class="scroll-indicator">
+            <span></span>
+        </div>
+    </section>
+    <section class="section about" id="about">
+        <h2 class="section-title">درباره من</h2>
+        <div class="about-grid">
+            <div class="about-image">
+                <img src="https://i.imgur.com/placeholder.jpg" alt="نوید کنزول" id="about-img">
+            </div>
+            <div class="about-content">
+                <h3>نوید کنزول</h3>
+                <p>من نوید کنزول هستم، یک هکر و متخصص امنیت سایبری ایرانی. از کودکی به دنیای فناوری و کامپیوتر علاقه‌مند بودم و مسیر حرفه‌ای خود را در حوزه امنیت سایبری و هک اخلاقی آغاز کردم.</p>
+                <p>با سال‌ها تجربه در زمینه تست نفوذ، تحلیل آسیب‌پذیری‌ها و امنیت شبکه، به دنبال ارتقای سطح امنیت فضای مجازی و آموزش نسل جدیدی از متخصصان سایبری هستم. اعتقاد دارم که دانش باید به اشتراک گذاشته شود تا جامعه دیجیتال ما امن‌تر شود.</p>
+                <p>تخصص اصلی من در حوزه‌های Offensive Security، Reverse Engineering، Network Security و Exploit Development است. همیشه در حال یادگیری و کشف تکنیک‌های جدید هستم.</p>
+                <div class="about-stats">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="150">0</div>
+                        <div class="stat-label">پروژه موفق</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="50">0</div>
+                        <div class="stat-label">آسیب‌پذیری کشف‌شده</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="8">0</div>
+                        <div class="stat-label">سال تجربه</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section skills" id="skills">
+        <h2 class="section-title">مهارت‌ها و تخصص‌ها</h2>
+        <div class="skills-grid">
+            <div class="skill-card card-3d">
+                <span class="skill-icon">🔐</span>
+                <h3>Penetration Testing</h3>
+                <p>تست نفوذ پیشرفته در وب‌اپلیکیشن‌ها، شبکه‌ها و سیستم‌های عامل با استفاده از متدولوژی‌های OWASP و PTES</p>
+                <div class="skill-bar"><div class="skill-progress" data-width="95%"></div></div>
+            </div>
+            <div class="skill-card card-3d">
+                <span class="skill-icon">🛡️</span>
+                <h3>Network Security</h3>
+                <p>امنیت شبکه، تحلیل ترافیک، شناسایی نفوذ (IDS/IPS) و پیاده‌سازی فایروال‌های پیشرفته</p>
+                <div class="skill-bar"><div class="skill-progress" data-width="90%"></div></div>
+            </div>
+            <div class="skill-card card-3d">
+                <span class="skill-icon">💻</span>
+                <h3>Reverse Engineering</h3>
+                <p>مهندسی معکوس نرم‌افزار، تحلیل بدافزارها و دی‌کامپایل کردن برنامه‌های باینری</p>
+                <div class="skill-bar"><div class="skill-progress" data-width="85%"></div></div>
+            </div>
+            <div class="skill-card card-3d">
+                <span class="skill-icon">🔍</span>
+                <h3>OSINT & Recon</h3>
+                <p>جمع‌آوری اطلاعات منبع‌باز، تحلیل داده‌های عمومی و شناسایی سطح حمله</p>
+                <div class="skill-bar"><div class="skill-progress" data-width="92%"></div></div>
+            </div>
+            <div class="skill-card card-3d">
+                <span class="skill-icon">⚡</span>
+                <h3>Exploit Development</h3>
+                <p>توسعه اکسپلویت، نوشتن شل‌کد و استفاده از تکنیک‌های پیشرفته دور زدن محافظت‌ها</p>
+                <div class="skill-bar"><div class="skill-progress" data-width="88%"></div></div>
+            </div>
+            <div class="skill-card card-3d">
+                <span class="skill-icon">🐍</span>
+                <h3>Python & Scripting</h3>
+                <p>برنامه‌نویسی Python، Bash و PowerShell برای اتوماسیون تست‌های امنیتی</p>
+                <div class="skill-bar"><div class="skill-progress" data-width="93%"></div></div>
+            </div>
+        </div>
+    </section>
+    <section class="section timeline" id="timeline">
+        <h2 class="section-title">مسیر حرفه‌ای</h2>
+        <div class="timeline-container">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">2018</div>
+                    <div class="timeline-title">شروع سفر سایبری</div>
+                    <div class="timeline-desc">آغاز یادگیری اصول برنامه‌نویسی و شبکه. کشف علاقه به دنیای هک و امنیت.</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">2019</div>
+                    <div class="timeline-title">اولین باگ بانتی</div>
+                    <div class="timeline-desc">کشف اولین آسیب‌پذیری در یک پلتفرم بزرگ و دریافت جایزه باگ بانتی.</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">2020</div>
+                    <div class="timeline-title">CEH Certification</div>
+                    <div class="timeline-desc">اخذ مدرک Certified Ethical Hacker و شروع فعالیت حرفه‌ای در تست نفوذ.</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">2021</div>
+                    <div class="timeline-title">تأسیس تیم امنیتی</div>
+                    <div class="timeline-desc">تشکیل تیم متخصصان امنیت سایبری برای ارائه خدمات به شرکت‌ها.</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">2022</div>
+                    <div class="timeline-title">OSCP Certification</div>
+                    <div class="timeline-desc">اخذ مدرک Offensive Security Certified Professional — یکی از معتبرترین مدارک هک.</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">2023-2024</div>
+                    <div class="timeline-title">هکر برتر منطقه</div>
+                    <div class="timeline-desc">رتبه برتر در چالش‌های CTF بین‌المللی و همکاری با سازمان‌های بزرگ.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section contact" id="contact">
+        <h2 class="section-title">تماس با من</h2>
+        <div class="contact-grid">
+            <a href="#" class="contact-card">
+                <span class="contact-icon">📧</span>
+                <h3>Email</h3>
+                <p>navid.kenzol@cyber.ir</p>
+            </a>
+            <a href="#" class="contact-card">
+                <span class="contact-icon">💬</span>
+                <h3>Telegram</h3>
+                <p>@NavidKenzol</p>
+            </a>
+            <a href="#" class="contact-card">
+                <span class="contact-icon">🐦</span>
+                <h3>Twitter/X</h3>
+                <p>@NavidKenzol</p>
+            </a>
+            <a href="#" class="contact-card">
+                <span class="contact-icon">💻</span>
+                <h3>GitHub</h3>
+                <p>github.com/navidkenzol</p>
+            </a>
+        </div>
+    </section>
+    <footer>
+        <p>© 2024 NAVID KENZOL | ALL RIGHTS RESERVED | IRANIAN CYBER SECURITY</p>
+    </footer>
+    <script>
+        const cursor = document.querySelector('.cursor');
+        const cursorFollower = document.querySelector('.cursor-follower');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX - 10 + 'px';
+            cursor.style.top = e.clientY - 10 + 'px';
+            cursorFollower.style.left = e.clientX - 20 + 'px';
+            cursorFollower.style.top = e.clientY - 20 + 'px';
+        });
+        document.addEventListener('mousedown', () => { cursor.style.transform = 'scale(0.8)'; });
+        document.addEventListener('mouseup', () => { cursor.style.transform = 'scale(1)'; });
+
+        const matrixCanvas = document.getElementById('matrix-canvas');
+        const matrixCtx = matrixCanvas.getContext('2d');
+        matrixCanvas.width = window.innerWidth;
+        matrixCanvas.height = window.innerHeight;
+        const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@#$%^&*';
+        const charArray = chars.split('');
+        const fontSize = 14;
+        const columns = matrixCanvas.width / fontSize;
+        const drops = [];
+        for (let i = 0; i < columns; i++) { drops[i] = Math.random() * -100; }
+        function drawMatrix() {
+            matrixCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+            matrixCtx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            matrixCtx.font = fontSize + 'px monospace';
+            for (let i = 0; i < drops.length; i++) {
+                const text = charArray[Math.floor(Math.random() * charArray.length)];
+                matrixCtx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) { drops[i] = 0; }
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 50);
+
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        const typingText = document.getElementById('typing');
+        const phrases = ['Security Researcher', 'Ethical Hacker', 'Penetration Tester', 'Reverse Engineer', 'Bug Hunter', 'CTF Player'];
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        function type() {
+            const currentPhrase = phrases[phraseIndex];
+            if (isDeleting) {
+                typingText.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingText.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            let typeSpeed = isDeleting ? 50 : 100;
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                typeSpeed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                typeSpeed = 500;
+            }
+            setTimeout(type, typeSpeed);
+        }
+        type();
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const geometry = new THREE.IcosahedronGeometry(10, 1);
+        const material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.1 });
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 2000;
+        const posArray = new Float32Array(particlesCount * 3);
+        for (let i = 0; i < particlesCount * 3; i++) { posArray[i] = (Math.random() - 0.5) * 50; }
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMaterial = new THREE.PointsMaterial({ size: 0.05, color: 0xffffff, transparent: true, opacity: 0.6 });
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+        camera.position.z = 15;
+
+        let mouseX = 0;
+        let mouseY = 0;
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            sphere.rotation.x += 0.001;
+            sphere.rotation.y += 0.002;
+            particlesMesh.rotation.x += 0.0005;
+            particlesMesh.rotation.y += 0.0005;
+            sphere.rotation.x += mouseY * 0.01;
+            sphere.rotation.y += mouseX * 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            matrixCanvas.width = window.innerWidth;
+            matrixCanvas.height = window.innerHeight;
+        });
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        const statNumbers = document.querySelectorAll('.stat-number');
+        statNumbers.forEach(stat => {
+            const target = parseInt(stat.getAttribute('data-count'));
+            gsap.to(stat, { innerHTML: target, duration: 2, snap: { innerHTML: 1 }, scrollTrigger: { trigger: stat, start: 'top 80%' } });
+        });
+
+        const skillBars = document.querySelectorAll('.skill-progress');
+        skillBars.forEach(bar => {
+            const width = bar.getAttribute('data-width');
+            gsap.to(bar, { width: width, duration: 1.5, ease: 'power2.out', scrollTrigger: { trigger: bar, start: 'top 85%' } });
+        });
+
+        const timelineItems = document.querySelectorAll('.timeline-item');
+        timelineItems.forEach((item, index) => {
+            gsap.from(item, { opacity: 0, x: index % 2 === 0 ? -50 : 50, duration: 1, scrollTrigger: { trigger: item, start: 'top 80%' } });
+        });
+
+        const skillCards = document.querySelectorAll('.skill-card');
+        skillCards.forEach((card, index) => {
+            gsap.from(card, { opacity: 0, y: 50, duration: 0.8, delay: index * 0.1, scrollTrigger: { trigger: card, start: 'top 85%' } });
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        gsap.to('.hero-image-container', {
+            scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
+            y: 100, scale: 0.8, opacity: 0.5
+        });
+
+        document.querySelectorAll('.card-3d').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+                card.style.transform = 'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateY(-10px) scale(1.02)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
 
